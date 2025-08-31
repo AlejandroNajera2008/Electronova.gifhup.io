@@ -6,26 +6,17 @@
   <title>Electronova — Productos</title>
   <link rel="icon" href="imagenes/electronova.png" />
   <style>
-    /* ---------- Tema unificado ---------- */
     :root{
-      --bg:#f4f6f9;
-      --azul-700:#0d3a66;
-      --azul-500:#1ea7ff;
-      --azul-400:#63c0ff;
-      --muted:#6b7280;
-      --card:#ffffff;
-      --border:rgba(13,58,102,0.08);
-      --shadow-sm:0 6px 20px rgba(16,24,40,0.06);
-      --shadow-md:0 18px 40px rgba(16,24,40,0.10);
+      --bg:#f4f6f9; --azul-700:#0d3a66; --azul-500:#1ea7ff; --azul-400:#63c0ff;
+      --muted:#6b7280; --card:#ffffff; --border:rgba(13,58,102,0.08);
+      --shadow-sm:0 6px 20px rgba(16,24,40,0.06); --shadow-md:0 18px 40px rgba(16,24,40,0.10);
       --radius:14px;
     }
-
     *{box-sizing:border-box}
     html,body{margin:0;background:var(--bg);color:#0f1724;font-family:Inter,system-ui,Arial}
     a{color:inherit}
     .container{max-width:1200px;margin:0 auto;padding:0 20px}
 
-    /* Header */
     header{
       position:sticky;top:0;z-index:50;
       background:linear-gradient(90deg, rgba(255,255,255,0.70), rgba(255,255,255,0.55));
@@ -41,52 +32,49 @@
     nav.primary a[aria-current="page"]{color:var(--azul-700)}
     nav.primary a:hover{background:rgba(13,58,102,0.04);color:var(--azul-700)}
     .menu-toggle{display:none;background:transparent;border:0;font-size:20px;cursor:pointer}
-    @media(max-width:880px){
-      nav.primary{display:none}
-      .menu-toggle{display:inline-block}
-    }
+    @media(max-width:880px){ nav.primary{display:none} .menu-toggle{display:inline-block} }
 
     main{padding:24px 0}
     h1{margin:0 0 6px;color:var(--azul-700)}
     p.lead{color:var(--muted);margin-top:0}
 
-    /* ---------- Producto completo por línea ---------- */
+    /* Producto por línea */
     .product-row{
-      background:var(--card);
-      border:1px solid var(--border);
-      border-radius:var(--radius);
-      box-shadow:var(--shadow-sm);
-      padding:14px;
-      display:grid;
-      grid-template-columns: 1.4fr 1fr; /* galería grande + detalles */
-      gap:16px;
+      background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
+      box-shadow:var(--shadow-sm); padding:14px; display:grid; gap:16px;
+      grid-template-columns: 1.4fr 1fr;
       margin-bottom:16px;
     }
-    /* Galería hasta 4 fotos (grandes) */
+
+    /* Galería sin alturas fijas -> sin distorsión */
     .gallery{
       display:grid;
-      grid-template-columns:repeat(2,1fr);
-      grid-auto-rows:200px;
+      grid-template-columns:repeat(2, minmax(0,1fr));
       gap:12px;
     }
     .gallery img{
-      width:100%;height:100%;object-fit:cover;border-radius:12px;background:#e9eef6
+      width:100%;
+      height:auto;                /* Mantiene proporción natural */
+      aspect-ratio: 16 / 10;      /* Tamaño consistente sin forzar */
+      object-fit:cover;           /* Recorte suave, sin deformar */
+      display:block;
+      border-radius:12px;
+      background:#e9eef6;
     }
-    /* Si solo pones 1 imagen, se hace grande ocupando todo */
-    .gallery:has(img:nth-child(1)):not(:has(img:nth-child(2))) img:nth-child(1){
-      grid-column:1 / -1; grid-row:1 / -1; height:420px;
-    }
+    /* Si solo hay 1 foto, que ocupe todo el ancho */
+    .gallery.single{grid-template-columns:1fr}
+    .gallery.single img{aspect-ratio: 16 / 9}
 
-    /* Detalles visibles sin entrar a otra página */
+    /* Detalles */
     .details{display:flex;flex-direction:column;gap:8px}
     .name{font-weight:900;color:var(--azul-700);font-size:20px}
     .model{color:var(--muted);font-size:13px;margin-top:-4px}
 
     /* Stock badge */
     .stock{align-self:flex-start;font-weight:800;font-size:12px;padding:4px 10px;border-radius:999px;border:1px solid transparent}
-    .stock.in{color:#065f46;background:#ecfdf5;border-color:#10b98133}    /* verde */
-    .stock.low{color:#92400e;background:#fffbeb;border-color:#f59e0b33}  /* ámbar */
-    .stock.out{color:#991b1b;background:#fef2f2;border-color:#ef444433}  /* rojo */
+    .stock.in{color:#065f46;background:#ecfdf5;border-color:#10b98133}
+    .stock.low{color:#92400e;background:#fffbeb;border-color:#f59e0b33}
+    .stock.out{color:#991b1b;background:#fef2f2;border-color:#ef444433}
 
     .specs{list-style:disc;padding-left:18px;margin:6px 0;color:#111}
     .specs li{margin:4px 0;font-size:14px}
@@ -96,16 +84,17 @@
       background:linear-gradient(90deg,var(--azul-500),var(--azul-400));
       color:#032033;border:none;border-radius:10px;padding:10px 12px;font-weight:800;text-decoration:none
     }
-    .btn-outline{
-      background:#fff;border:1px solid var(--border);border-radius:10px;padding:10px 12px;font-weight:800;text-decoration:none;color:var(--azul-700)
-    }
-    /* Deshabilitar anclas como botones cuando no hay stock */
     .btn[disabled]{opacity:.55;pointer-events:none}
 
-    /* Responsive: apilar en móviles */
+    /* Responsive: apilar y 1 columna de fotos en móvil */
     @media (max-width:900px){
       .product-row{grid-template-columns:1fr}
-      .gallery{grid-auto-rows:160px}
+      .gallery{grid-template-columns:1fr}
+      .gallery img{
+        aspect-ratio: 4 / 3;      /* Un poco más alto en móvil */
+        object-fit:contain;       /* Evita recorte agresivo en pantallas chicas */
+        background:#f3f6fb;       /* “letterbox” suave si sobra espacio */
+      }
     }
 
     .back{display:inline-block;margin-top:16px;text-decoration:none;color:var(--azul-700);font-weight:800}
@@ -118,7 +107,6 @@
         <img src="imagenes/electronova.png" alt="Logo Electronova">
         <div class="title">Electronova</div>
       </a>
-
       <nav class="primary" aria-label="Navegación principal">
         <a href="producto.html" aria-current="page">Productos</a>
         <a href="ofertas.html">Ofertas</a>
@@ -126,7 +114,6 @@
         <a href="usuario.html">Usuario</a>
         <a href="sobre-nosotros.html">Sobre nosotros</a>
       </nav>
-
       <button class="menu-toggle" aria-label="Abrir menú" onclick="toggleMobile()">☰</button>
     </div>
   </header>
@@ -139,10 +126,10 @@
       <!-- Lenovo ThinkPad X9 15 Aura Edition -->
       <section class="product-row" role="listitem" aria-label="Lenovo ThinkPad X9 15 Aura Edition">
         <div class="gallery">
-          <img src="imagenes/lenovo1.jpg" alt="Lenovo ThinkPad X9 15 frente">
-          <img src="imagenes/lenovo2.jpg" alt="Lenovo ThinkPad X9 15 teclado">
-          <img src="imagenes/lenovo3.jpg" alt="Lenovo ThinkPad X9 15 perfil">
-          <img src="imagenes/lenovo4.jpg" alt="Lenovo ThinkPad X9 15 puertos">
+          <img loading="lazy" src="imagenes/lenovo1.jpg" alt="Lenovo ThinkPad X9 15 frente">
+          <img loading="lazy" src="imagenes/lenovo2.jpg" alt="Lenovo ThinkPad X9 15 teclado">
+          <img loading="lazy" src="imagenes/lenovo3.jpg" alt="Lenovo ThinkPad X9 15 perfil">
+          <img loading="lazy" src="imagenes/lenovo4.jpg" alt="Lenovo ThinkPad X9 15 puertos">
         </div>
         <div class="details">
           <div class="name">Lenovo ThinkPad X9 15 Aura Edition</div>
@@ -164,10 +151,10 @@
       <!-- Apple MacBook Pro 16.2" (M4 Max, 2024) -->
       <section class="product-row" role="listitem" aria-label="Apple MacBook Pro 16.2 M4 Max 2024">
         <div class="gallery">
-          <img src="imagenes/macbook%20pro1.jpg" alt="MacBook Pro 16.2 frente">
-          <img src="imagenes/macbook%20pro2.jpg" alt="MacBook Pro 16.2 perfil">
-          <img src="imagenes/macbook%20pro3.jpg" alt="MacBook Pro 16.2 teclado y trackpad">
-          <img src="imagenes/macbook%20pro4.jpg" alt="MacBook Pro 16.2 pantalla Liquid Retina XDR">
+          <img loading="lazy" src="imagenes/macbook%20pro1.jpg" alt="MacBook Pro 16.2 frente">
+          <img loading="lazy" src="imagenes/macbook%20pro2.jpg" alt="MacBook Pro 16.2 perfil">
+          <img loading="lazy" src="imagenes/macbook%20pro3.jpg" alt="MacBook Pro 16.2 teclado y trackpad">
+          <img loading="lazy" src="imagenes/macbook%20pro4.jpg" alt="MacBook Pro 16.2 pantalla Liquid Retina XDR">
         </div>
         <div class="details">
           <div class="name">Apple MacBook Pro 16.2" (M4 Max, 2024)</div>
@@ -189,10 +176,10 @@
       <!-- Microsoft Surface Laptop 7 (2025) -->
       <section class="product-row" role="listitem" aria-label="Microsoft Surface Laptop 7 2025">
         <div class="gallery">
-          <img src="imagenes/surface1.jpg" alt="Surface Laptop 7 frente">
-          <img src="imagenes/surface2.jpg" alt="Surface Laptop 7 PixelSense 120 Hz">
-          <img src="imagenes/surface3.jpeg" alt="Surface Laptop 7 perfil ligero">
-          <img src="imagenes/surface4.jpg" alt="Surface Laptop 7 puertos y teclado">
+          <img loading="lazy" src="imagenes/surface1.jpg" alt="Surface Laptop 7 frente">
+          <img loading="lazy" src="imagenes/surface2.jpg" alt="Surface Laptop 7 PixelSense 120 Hz">
+          <img loading="lazy" src="imagenes/surface3.jpeg" alt="Surface Laptop 7 perfil ligero">
+          <img loading="lazy" src="imagenes/surface4.jpg" alt="Surface Laptop 7 puertos y teclado">
         </div>
         <div class="details">
           <div class="name">Microsoft Surface Laptop 7 (2025)</div>
@@ -214,10 +201,10 @@
       <!-- Razer Blade 16 (2025) -->
       <section class="product-row" role="listitem" aria-label="Razer Blade 16 2025">
         <div class="gallery">
-          <img src="imagenes/razer1.jpg" alt="Razer Blade 16 vista frontal">
-          <img src="imagenes/razer2.jpg" alt="Razer Blade 16 pantalla OLED 240 Hz 2560×1600">
-          <img src="imagenes/razer3.jpg" alt="Razer Blade 16 con refrigeración Vapor Chamber">
-          <img src="imagenes/razer4.jpg" alt="Razer Blade 16 teclado RGB por tecla">
+          <img loading="lazy" src="imagenes/razer1.jpg" alt="Razer Blade 16 vista frontal">
+          <img loading="lazy" src="imagenes/razer2.jpg" alt="Razer Blade 16 pantalla OLED 240 Hz 2560×1600">
+          <img loading="lazy" src="imagenes/razer3.jpg" alt="Razer Blade 16 con refrigeración Vapor Chamber">
+          <img loading="lazy" src="imagenes/razer4.jpg" alt="Razer Blade 16 teclado RGB por tecla">
         </div>
         <div class="details">
           <div class="name">Razer Blade 16 (2025)</div>
@@ -241,7 +228,6 @@
   </main>
 
   <script>
-    // Menú móvil
     function toggleMobile(){
       const nav = document.querySelector('nav.primary');
       if(!nav) return;
@@ -257,46 +243,25 @@
       nav.style.zIndex = '60';
     }
 
-    // Renderizar estado de stock según reglas solicitadas
+    // Marcar galería con 1 sola imagen
+    document.querySelectorAll('.gallery').forEach(g=>{
+      if(g.querySelectorAll('img').length === 1) g.classList.add('single');
+    });
+
+    // Renderizar estado de stock (tus reglas)
     document.querySelectorAll('.stock').forEach(el=>{
       const n = Number(el.dataset.stock);
       const reservarBtn = el.closest('.details')?.querySelector('.actions .reservar');
-
-      // Limpia estados previos
       el.classList.remove('in','low','out');
-
       if (!Number.isFinite(n) || n === 0) {
-        // 0 -> Agotado
-        el.textContent = 'Agotado';
-        el.classList.add('out');
-        if (reservarBtn) {
-          reservarBtn.setAttribute('disabled','');
-          reservarBtn.setAttribute('aria-disabled','true');
-          reservarBtn.title = 'Agotado (no disponible para reservar)';
-        }
+        el.textContent = 'Agotado'; el.classList.add('out');
+        if (reservarBtn){ reservarBtn.setAttribute('disabled',''); reservarBtn.setAttribute('aria-disabled','true'); reservarBtn.title='Agotado'; }
         return;
       }
-
-      // Asegura que el botón esté habilitado si hay stock
-      if (reservarBtn) {
-        reservarBtn.removeAttribute('disabled');
-        reservarBtn.removeAttribute('aria-disabled');
-        reservarBtn.removeAttribute('title');
-      }
-
-      if (n <= 2) {
-        // <= 2 -> Últimas unidades
-        el.textContent = `Últimas unidades: ${n}`;
-        el.classList.add('low');
-      } else if (n > 3) {
-        // > 3 -> En existencia
-        el.textContent = `En existencia: ${n}`;
-        el.classList.add('in');
-      } else {
-        // n === 3 (caso intermedio no pedido explícitamente)
-        el.textContent = `Disponibles: ${n}`;
-        el.classList.add('in');
-      }
+      if (reservarBtn){ reservarBtn.removeAttribute('disabled'); reservarBtn.removeAttribute('aria-disabled'); reservarBtn.removeAttribute('title'); }
+      if (n <= 2) { el.textContent = `Últimas unidades: ${n}`; el.classList.add('low'); }
+      else if (n > 3) { el.textContent = `En existencia: ${n}`; el.classList.add('in'); }
+      else { el.textContent = `Disponibles: ${n}`; el.classList.add('in'); }
     });
   </script>
 </body>
